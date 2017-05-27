@@ -17,6 +17,9 @@
   },
   "homepage": "https://github.com/catshark9/Budget-App#readme",
   "dependencies": {
-    "d3": "^4.9.1"
+    "bootstrap": "^3.3.7",
+    "d3": "^4.9.1",
+    "jquery": "^3.2.1",
+    "jquery-typeahead": "^2.8.0"
   }
 }

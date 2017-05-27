@@ -1,97 +1,116 @@
 <!DOCTYPE html>
-<html>
-	<head>
-		<title>{{t}}</title>
-		<!-- href="/static/assets/style.css"-->
-		<link rel="stylesheet" type="text/css"  href="{{ url_for('static',filename='assets/style.css')}}" >
-		<link rel="stylesheet" type="text/css"  href="{{ url_for('static',filename='assets/emoji.css')}}" >
-		<script src="{{ url_for('static',filename='assets/twemoji.min.js')}}"></script>
-		<script src="{{ url_for('static',filename='assets/emoji.js')}}"></script>
-	</head>
-<body>
-	<h1>{{ h }}</h1>
-	<ul>
-		<li><a href="/list" class="{{ a1 }}">All Cash Flows</a></li>
-		<li><a href="/" class="{{ a2 }}">Cash Flows Coming In</a></li>
-		<li><a href="/cf_out" class="{{ a3 }}">Cash Flows Going Out</a></li>
-		<li style="float:right"><a href="/about">About</a></li>
-	</ul>
-	<hr>
-	{% if cfs[0] %}
-	<div span="right">
-	<form action="/search"	method="GET" >
-		<table class="none" id="close">
-		<tr>
-		<td></td><td></td>
-		<td><big><b>Search Reference:</b></big></td>
-		<td><select name="refer" required>
-			<option value="name">Cash Flow Name</option>
-			<option value="amount">Amount</option>
-			<option value="month">month</option>
-			<option value="year">year</option>
-			<option value="io">In/Out</option>
-		</select></td>
-		<td><input type="text" name="key" placeholder="Search Cash Flows" size="15" /></td>
-		<td><button type="submit">Search</button></td>
-		</tr>
-		</table>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ t }}</title>
+    <link href="{{ url_for('static',filename='css/bootstrap.min.css')}}" rel="stylesheet">
+
+    
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <nav class="navbar navbar-inverse navbar-static-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">{{ h }}</a>
+            </div>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="/about">About</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Nav<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/list">All Cash Flows</a></li>
+                            <li><a href="/cf_in">Cash Flows Coming In</a></li>
+                            <li><a href="/cf_out">Cash flows Going Out</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    {% if cfs[0] %}
+        <table class="table">
+            <thead class="thead-inverse">
+                <tr>
+                    <th>#</th>
+                    <th>Source Name</th>
+                    <th>Amount</th>
+                    <th>Month</th>
+                    <th>Year</th>
+                    <th>In/Out</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+             <tbody>
+                {% for cf in cfs %}
+                <tr>
+                    <th scope="row">1</th>
+                    <td>{{ cf["name"] }}</td>
+                    <td>{{ cf["amount"] }}</td>
+                    <td>{{ cf["month"] }}</td>
+                    <td>{{ cf["year"] }}</td>
+                    <td>{{ cf["io"] }}</td>
+                    <td><a href="./remove?_id={{ cf['_id'] }}"><button type="submit" class="btn btn-default">Delete</button></a> 
+                        <a href="./update?_id={{ cf['_id'] }}"><button type="submit" class="btn btn-default">Edit</button></a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+		<div class="container">
+        <div class="row">
+            <div class="col-md-2">
+                <p>Nothing to see here</p>
+            </div>
+        </div>
+        </div>
+    {% endif %}
+    </hr>
+    <h3>Add a Cash Flow</h3>
+    <form action="/add" method="POST">
+        <table class="table">
+            <thead class="thead-inverse">
+                <tr>
+                    <th scope="row"></th>
+                    <th>Source Name</th>
+                    <th>Amount</th>
+                    <th>Month</th>
+                    <th>Year</th>
+                    <th>In/Out</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td></td>
+                    <td><input type="text" name="name" placeholder="Cash Flow" /></td>
+                    <td><input type="text" name="amount" placeholder="Amount" /></td>
+                    <td><input type="text" name="month" placeholder="month (01)" /></td>
+                    <td><input type="text" name="year" placeholder="year (2017)" /></td>
+                    <td><input type="text" name="io" placeholder="in/out" /></td>
+                    <td><button type="submit" class="btn btn-default"> Create </button></td>
+                </tr>
+            </tbody>
 	</form>
-	</div>
-	<b><big>Cash Flows :</big></b>
-	<table>
-	    <tr id="row">
-	    	<th class="desc">Cash Flow Name</th>
-	    	<th class="name">Amount</th>
-	    	<th class="date">Month</th>
-			<th class="date">Year</th>
-	    	<th class="pr">In/Out</th>
-		<th class="func1">Remove</th>
-		<th class="func2">Modify</th>
-	    </tr>
-	{% for cf in cfs %}
-		<tr class="datas">
-
-			<td class="name">{{ cf["name"] }}</td>
-			<td class="desc">{{ cf["amount"] }}</td>
-			<td class="date">{{ cf["month"] }}</td>
-			<td class="date">{{ cf["year"] }}</td>
-			<td class="pr">{{ cf["io"] }}</td>
-			<td class="func1"><a href="./remove?_id={{ cf['_id'] }}"><button type="submit">DELETE</button></a></td>
-			<td class="func1"><a href="./update?_id={{ cf['_id'] }}"><button type="submit">EDIT</button></a></td>
-		</tr>
-	{% endfor %}
 	</table>
-	{% else %}
-		<h4>No Cash Flows in the List !!</h4>
-	{% endif %}
-	<hr/>
-	<h1>Total = {{ total }}</h1>
-	<script>
-		var nums = "{{ cf }}";
-		var total1 = 0;
+   
+   
+	
 
-		for(var i=0; i < nums.length; i++){
-			total1 += parseInt(nums[i]);
-		};
-	</script>
-	</hr>
-	<form action="/add" method="POST">
-	<table class="none">
-		<tr>
-			<td><b><big><label>Add a Cash Flow : </label></big></b></td>
-		</tr>
-		<tr>
-		<td><input type="text" name="name" placeholder="Cash Flow" /></td>
-		<td><input type="text" name="amount" placeholder="Amount" /></td>
-		<td><input type="text" name="month" placeholder="month (01)" /></td>
-		<td><input type="text" name="year" placeholder="year (2017)" /></td>
-		<td><input type="text" name="io" placeholder="in/out" /></td>
-		<td><button type="submit"> Create </button></td>
-		</tr>
-	</form>
-	</table>
-	<script>
-
-	</script>
-</body>
+    <script src="{{ url_for('static',filename='js/jquery.min.js')}}"></script>
+    <script src="{{ url_for('static',filename='js/bootstrap.min.js')}}"></script>
+  </body>
 </html>
+

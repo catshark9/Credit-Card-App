@@ -11,14 +11,7 @@ title = "Budget with Flask"
 heading = "Budget"
 
 cfs_t = current_budget.find()
-total_in = 0
-total_out = 0
-for cf in cfs_t:
-	if cf['io'] == 'in':
-		total_in = total_in + float(cf['amount'])
-	else:
-		total_out = total_out + float(cf['amount'])
-total_all = total_in - total_out
+
 
 
 def redirect_url():
@@ -26,27 +19,28 @@ def redirect_url():
            request.referrer or \
            url_for('index')
 
+@app.route("/")
 @app.route("/list")
 def lists ():
 	#Display all Cash Flow
 	cfs = current_budget.find()
 	a1="active"
-	return render_template('index.html',a1=a1,cfs=cfs,t=title,h=heading, total=total_all)
+	return render_template('index.html',a1=a1,cfs=cfs,t=title,h=heading)
 
-@app.route("/")
+
 @app.route("/cf_in")
 def tasks ():
 	#Display Cash flows coming in
 	cfs = current_budget.find({"io":"in"})
 	a2="active"
-	return render_template('index.html',a2=a2,cfs=cfs,t=title,h=heading, total=total_in)
+	return render_template('index.html',a2=a2,cfs=cfs,t=title,h=heading)
 	
 @app.route("/cf_out")
 def completed ():
 	#Display cash flows coming out
 	cfs = current_budget.find({"io":"out"})
 	a3="active"
-	return render_template('index.html',a3=a3,cfs=cfs,t=title,h=heading, total=total_out)
+	return render_template('index.html',a3=a3,cfs=cfs,t=title,h=heading)
 	
 @app.route("/add", methods=['POST'])
 def add ():
