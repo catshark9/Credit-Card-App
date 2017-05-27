@@ -1,0 +1,22 @@
+{
+  "name": "budget-app",
+  "version": "1.0.0",
+  "description": "budget app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/catshark9/Budget-App.git"
+  },
+  "author": "jon",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/catshark9/Budget-App/issues"
+  },
+  "homepage": "https://github.com/catshark9/Budget-App#readme",
+  "dependencies": {
+    "d3": "^4.9.1"
+  }
+}
