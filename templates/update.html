@@ -1,0 +1,45 @@
+<html>
+	<head>
+		<title>{{t}}</title>
+	</head>
+	<style>	
+		h1{
+			font-family:"Arial Black", Gadget, sans-serif;
+		}
+		body{
+			background-color:white;
+		}
+	</style>
+<body>
+	<h1>{{h}}</h1>
+	<hr>
+	<h3>Update budget with a reference</h3>
+	<form action="/action3" method="POST">
+	{% for cf in cfs %}
+		Unique Object ID : {{ cf['_id'] }}<br/>
+	<input type="text" name="_id" value="{{ cf['_id'] }}" hidden>
+
+	<table>
+	<tr>
+	<td>Cash Flow Name</td><td> : </td><td><input type="text" name="name" value="{{ cf['name'] }}" placeholder="{{ cf['name'] }}"></td>
+	</tr>
+	<tr>
+	<td>Amount</td><td> : </td><td><input type="text" name="amount" value="{{ cf['amount'] }}" placeholder="{{ cf['amount'] }}"></td>
+	</tr>
+	<tr>
+	<td>Month</td><td> : </td><td><input type="text" name="month" value="{{ cf['month'] }}" placeholder="{{ cf['month'] }}"></td>
+	</tr>
+	<tr>
+	<td>Year</td><td> : </td><td><input type="text" name="year" value="{{ cf['year'] }}" placeholder="{{ cf['year'] }}"></td>
+	</tr>
+	<tr>
+	<td>In/Out</td><td> : </td><td><input type="text" name="io" value="{{ cf['io'] }}" placeholder="{{ cf['io'] }}"></td>
+	</tr>
+	</table>
+	{% endfor %}
+		<button type="submit"> Update Cash Flow </button>
+		<br/>
+	</form>
+	<a href="/">Return to Budget</a>
+</body>
+</html>
