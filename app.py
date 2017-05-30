@@ -1,18 +1,27 @@
-from flask import Flask, render_template,request,redirect,url_for # For flask implementation
-from pymongo import MongoClient # Database connector
+from flask import Flask, jsonify, render_template, redirect
+from pymongo import MongoClient
+import pymongo
+import json
+from bson import json_util
+from bson.json_util import dumps
 from bson.objectid import ObjectId # For ObjectId to work
+from flask import request
 
-client = MongoClient('localhost', 27017)    #Configure the connection to the database
-db = client.budget    #Select the database
-current_budget = db.current_budget #Select the collection
+MONGODB_HOST = 'localhost'
+MONGODB_PORT = 27017
+DBS_NAME = 'CreditCards'
+COLLECTION_NAME = 'CurrentValue'
+FIELDS = {'CardName': True, 'Program': True, 'Issuer': True, 'Link': True, 'Cash': True, 'Points': True, 'Nights': True, 'Credit': True, 'Fee': True, 'img': True, 'Spend': True, 'Rate': True, 'Value': True, '_id': False}
+connection = MongoClient(MONGODB_HOST)
+collection = connection[DBS_NAME][COLLECTION_NAME]
+
+programs = collection.distinct("Program")
+issuers = collection.distinct("Issuer")
+
 
 app = Flask(__name__)
-title = "Budget with Flask"
-heading = "Budget"
-
-cfs_t = current_budget.find()
-
-
+title = "Credit Cards"
+heading = "Credit Card Introduction Bonuses"
 
 def redirect_url():
     return request.args.get('next') or \
@@ -21,79 +30,87 @@ def redirect_url():
 
 @app.route("/")
 @app.route("/list")
-def lists ():
-	#Display all Cash Flow
-	cfs = current_budget.find()
-	a1="active"
-	return render_template('index.html',a1=a1,cfs=cfs,t=title,h=heading)
+def list():
+	#Display all credit cards
+	CurrentValue = collection.find({"Value":{"$ne":'NA'}}).sort('Value', pymongo.DESCENDING)
+	return(render_template('index.html',cards=CurrentValue, programs=programs, issuers=issuers, t=title, h=heading))
 
+@app.route("/view")
+def view():
+	#to edit informaion for cards
+	CurrentValue = collection.find().sort('Value', pymongo.DESCENDING)
+	return(render_template('view.html',cards=CurrentValue, t=title, h=heading))
 
-@app.route("/cf_in")
-def tasks ():
-	#Display Cash flows coming in
-	cfs = current_budget.find({"io":"in"})
-	a2="active"
-	return render_template('index.html',a2=a2,cfs=cfs,t=title,h=heading)
-	
-@app.route("/cf_out")
-def completed ():
-	#Display cash flows coming out
-	cfs = current_budget.find({"io":"out"})
-	a3="active"
-	return render_template('index.html',a3=a3,cfs=cfs,t=title,h=heading)
-	
-@app.route("/add", methods=['POST'])
-def add ():
-	#Adding a Task
-	name=request.values.get("name")
-	amount=request.values.get("amount")
-	month=request.values.get("month")
-	year=request.values.get("year")
-	io=request.values.get("io")
-	current_budget.insert({ "name":name, "amount":amount, "month":month, "year":year, "io":io})
-	return redirect("/list")	
-	
-@app.route("/remove")
-def remove ():
-	#Deleting a cash flow with various references
+@app.route('/card/<name>', methods=['GET'])
+def cardname(name):
+    CurrentValue = collection.find({"CardName":name}).sort('Value', pymongo.DESCENDING)
+    return render_template("card.html", cards=CurrentValue, t=title, h=heading)
+
+@app.route("/delete")
+def delete():
+	#to edit informaion for cards
 	key=request.values.get("_id")
-	current_budget.remove({"_id":ObjectId(key)})
-	return redirect("/")
-	
+	collection.remove({"_id":ObjectId(key)})
+	return(redirect("/view"))
+
 @app.route("/update")
-def update ():
+def update():
 	id=request.values.get("_id")
-	cfs=current_budget.find({"_id":ObjectId(id)})
-	return render_template('update.html',cfs=cfs,h=heading,t=title)
+	CurrentValue = collection.find({"_id":ObjectId(id)})
+	return render_template('update.html',cards=CurrentValue,h=heading,t=title)
 
-@app.route("/action3", methods=['POST'])
-def action3 ():
-	#Updating a Task with various references
-	name=request.values.get("name")
-	amount=request.values.get("amount")
-	month=request.values.get("month")
-	year=request.values.get("year")
-	io=request.values.get("io")
-	id=request.values.get("_id")
-	current_budget.update({"_id":ObjectId(id)}, {'$set':{ "name":name, "amount":amount, "month":month, "year":year, "io":io }})
-	return redirect("/")
+@app.route("/CurrentCards/CurrentValue", methods=['GET'])
+def CurrentCards_CurrentValue():
+    CurrentValue = collection.find({"Value":{"$ne":'NA'}}).sort('Value', pymongo.DESCENDING)
+    json_CurrentValue = []
+    for cv in CurrentValue:
+        json_CurrentValue.append(cv)
+    json_CurrentValue = json.dumps(json_CurrentValue, default=json_util.default)
+    return(jsonify(json_CurrentValue))
 
-@app.route("/search", methods=['GET'])
-def search():
-	#Searching a cashflow with various references
 
-	key=request.values.get("key")
-	refer=request.values.get("refer")
-	if(key=="_id"):
-		cfs = current_budget.find({refer:ObjectId(key)})
+@app.route("/filter", methods=['POST'])
+def filter():
+	#filtering
+	type=request.values.get("type")
+	program=request.values.get("programs")
+	issuer=request.values.get("issuers")
+	if (type == 'All') & (program == 'All') & (issuer == 'All'):
+		CurrentValue = collection.find({ "Value":{"$ne":'NA'}}).sort('Value', pymongo.DESCENDING)
+	elif (type == 'All') & (program == 'All') & (issuer != 'All'):
+		CurrentValue = collection.find({"Issuer":issuer, "Value":{"$ne":'NA'}}).sort('Value', pymongo.DESCENDING)
+	elif (type == 'All') & (program != 'All') & (issuer == 'All'):
+		CurrentValue = collection.find({"Program":program, "Value":{"$ne":'NA'}}).sort('Value', pymongo.DESCENDING)
+	elif (type == 'All') & (program != 'All') & (issuer != 'All'):
+		CurrentValue = collection.find({"Issuer":issuer, "Program":program, "Value":{"$ne":'NA'}}).sort('Value', pymongo.DESCENDING)
+	elif (type != 'All') & (program == 'All') & (issuer == 'All'):
+		CurrentValue = collection.find({type:{"$gt":0}, "Value":{"$ne":'NA'}}).sort('Value', pymongo.DESCENDING)
+	elif (type != 'All') & (program == 'All') & (issuer != 'All'):
+		CurrentValue = collection.find({type:{"$gt":0}, "Issuer":issuer, "Value":{"$ne":'NA'}}).sort('Value', pymongo.DESCENDING)
+	elif (type != 'All') & (program != 'All') & (issuer == 'All'):
+		CurrentValue = collection.find({type:{"$gt":0}, "Program":program, "Value":{"$ne":'NA'}}).sort('Value', pymongo.DESCENDING)
 	else:
-		cfs = current_budget.find({refer:key})
-	return render_template('searchlist.html',cfs=cfs,t=title,h=heading)
-	
-	
+		CurrentValue = collection.find({type:{"$gt":0}, "Program":program, "Issuer":issuer, "Value":{"$ne":'NA'}}).sort('Value', pymongo.DESCENDING)
+	return(render_template('index.html',cards=CurrentValue,t=title,h=heading, programs=programs, issuers=issuers))
+
+@app.route("/modify_action", methods=['POST'])
+def modify_action():
+	#Updating a card with various references
+	name=request.values.get("name")
+	cash=request.values.get("cash")
+	points=request.values.get("points")
+	nights=request.values.get("nights")
+	spend=request.values.get("spend")
+	fee=request.values.get("fee")
+	value=request.values.get("value")
+	id=request.values.get("_id")
+	collection.update({"_id":ObjectId(id)}, {'$set':{ "CardName":name, "Cash":cash, "Points":points, "Nights":nights, "Spend":spend, "Fee":fee, "Value":value }})
+	return(redirect("/view"))
+
 @app.route("/about")
 def about():
-	return render_template('credits.html',t=title,h=heading)
+	#Display all credit cards
+	return(render_template('credits.html', t=title, h=heading))
 
 if __name__ == "__main__":
     app.run(debug=True)

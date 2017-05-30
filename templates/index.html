@@ -6,12 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ t }}</title>
     <link href="{{ url_for('static',filename='css/bootstrap.min.css')}}" rel="stylesheet">
-
-    
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  
   </head>
   <body>
     <nav class="navbar navbar-inverse navbar-static-top">
@@ -23,7 +19,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">{{ h }}</a>
+                <a class="navbar-brand" href="/">{{ h }}</a>
             </div>
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">
@@ -31,86 +27,125 @@
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Nav<span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <li><a href="/list">All Cash Flows</a></li>
-                            <li><a href="/cf_in">Cash Flows Coming In</a></li>
-                            <li><a href="/cf_out">Cash flows Going Out</a></li>
+                            <li><a href="/list">All Cards</a></li>
+                            <li><a href="/view">Edit Cards</a></li>
                         </ul>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
-    {% if cfs[0] %}
-        <table class="table">
-            <thead class="thead-inverse">
-                <tr>
-                    <th>#</th>
-                    <th>Source Name</th>
-                    <th>Amount</th>
-                    <th>Month</th>
-                    <th>Year</th>
-                    <th>In/Out</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-             <tbody>
-                {% for cf in cfs %}
-                <tr>
-                    <th scope="row">1</th>
-                    <td>{{ cf["name"] }}</td>
-                    <td>{{ cf["amount"] }}</td>
-                    <td>{{ cf["month"] }}</td>
-                    <td>{{ cf["year"] }}</td>
-                    <td>{{ cf["io"] }}</td>
-                    <td><a href="./remove?_id={{ cf['_id'] }}"><button type="submit" class="btn btn-default">Delete</button></a> 
-                        <a href="./update?_id={{ cf['_id'] }}"><button type="submit" class="btn btn-default">Edit</button></a></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-		<div class="container">
+
+    <script>
+        let url = '/CurrentCards/CurrentValue';
+
+        $(document).ready(function() {
+            var request = $.ajax({
+                type: "GET",
+                url: "/CurrentCards/CurrentValue",
+                data: {"name":""}, // if you wanted to specifiy what list then pass an actual name
+                dataType: "json"
+            });
+
+            request.done(function(JSON_array) {
+                var array_data = JSON.parse(JSON_array)
+
+                var items = ""
+                for(var i in array_data) {
+
+                        console.log(array_data[i].CardName)
+                   
+                } 
+                console.log(items)
+
+                var div = document.createElement("div");
+                div.innerHTML = items    
+
+                document.getElementById("main").appendChild(div);
+                
+            });
+        });
+        
+    </script>
+
+    <script>
+    $(document).ready(function(){
+        $('[data-toggle="popover"]').popover(); 
+    });
+    </script>
+
+    <div id="main" class="container"></div>
+
+    <div class="container-fluid">
         <div class="row">
-            <div class="col-md-2">
-                <p>Nothing to see here</p>
+            <div class="col-lg-3">    
+                <form action="/filter" method="POST">
+                    <div class="container">
+                        
+                            <div class="row">
+                                Program <br> <select name="programs" width="90%">
+                                    <option value="All">All</option>>
+                                {% for program in programs %}
+                                    <option value="{{ program }}">{{ program }}</option>
+                                {% endfor %}
+                                </select>
+                            </div>
+                            <div class="row">
+                                Issuer <br><select name="issuers" width="90%">
+                                    <option value="All">All</option>>
+                                {% for issuer in issuers %}
+                                    <option value="{{ issuer }}">{{ issuer }}</option>
+                                {% endfor %}
+                                </select>
+                            </div>
+                            <div class="row">
+                                Rewards <br><select name="type" width="90%">
+                                    <option value="All">All</option>>
+                                    <option value="Cash">Cash</option>
+                                    <option value="Points">Points</option>
+                                    <option value="Nights">Nights</option>
+                                </select>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <button type="submit" class="btn btn-default"> Submit </button>
+                            </div>
+                        
+                    </div>   
+                </form>
+            </div>
+
+      
+        {% if cards[0] %}
+            <div class="col-lg-6">
+                {% for card in cards %}
+                {% if loop.index % 3 == 1 %}
+                <div class="row">
+                {% endif %}
+                    <div class="col-md-4">
+                        <center><a href='card/{{ card["CardName"] }}' data-toggle="popover"><img src='{{ card["img"] }}' width="80%"></a></center>
+                        <center><h6>Value: <b>{{ card["Value"] }}</b></h6></center>
+                    </div>
+                {% if loop.index % 3 == 0 %}
+                </div>
+                {% endif %}
+            {% endfor %}
+            </div>
+        {% else %}
+        <div class="container">
+            <div class="row">
+                <div class="col-md-2">
+                    <p>Nothing to see here</p>
+                </div>
             </div>
         </div>
+        {% endif %}
         </div>
-    {% endif %}
-    </hr>
-    <h3>Add a Cash Flow</h3>
-    <form action="/add" method="POST">
-        <table class="table">
-            <thead class="thead-inverse">
-                <tr>
-                    <th scope="row"></th>
-                    <th>Source Name</th>
-                    <th>Amount</th>
-                    <th>Month</th>
-                    <th>Year</th>
-                    <th>In/Out</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td></td>
-                    <td><input type="text" name="name" placeholder="Cash Flow" /></td>
-                    <td><input type="text" name="amount" placeholder="Amount" /></td>
-                    <td><input type="text" name="month" placeholder="month (01)" /></td>
-                    <td><input type="text" name="year" placeholder="year (2017)" /></td>
-                    <td><input type="text" name="io" placeholder="in/out" /></td>
-                    <td><button type="submit" class="btn btn-default"> Create </button></td>
-                </tr>
-            </tbody>
-	</form>
-	</table>
-   
-   
-	
+    </div>
 
     <script src="{{ url_for('static',filename='js/jquery.min.js')}}"></script>
     <script src="{{ url_for('static',filename='js/bootstrap.min.js')}}"></script>
+    <script src="{{ url_for('static',filename='js/rangeslider.min.js')}}"></script>
   </body>
 </html>
 
