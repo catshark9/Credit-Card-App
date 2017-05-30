@@ -21,7 +21,7 @@ issuers = collection.distinct("Issuer")
 
 app = Flask(__name__)
 title = "Credit Cards"
-heading = "Credit Cards"
+heading = "Credit Card Introduction Bonuses"
 
 def redirect_url():
     return request.args.get('next') or \
@@ -40,6 +40,11 @@ def view():
 	#to edit informaion for cards
 	CurrentValue = collection.find().sort('Value', pymongo.DESCENDING)
 	return(render_template('view.html',cards=CurrentValue, t=title, h=heading))
+
+@app.route('/card/<name>', methods=['GET'])
+def cardname(name):
+    CurrentValue = collection.find({"CardName":name}).sort('Value', pymongo.DESCENDING)
+    return render_template("card.html", cards=CurrentValue, t=title, h=heading)
 
 @app.route("/delete")
 def delete():
@@ -101,6 +106,11 @@ def modify_action():
 	id=request.values.get("_id")
 	collection.update({"_id":ObjectId(id)}, {'$set':{ "CardName":name, "Cash":cash, "Points":points, "Nights":nights, "Spend":spend, "Fee":fee, "Value":value }})
 	return(redirect("/view"))
+
+@app.route("/about")
+def about():
+	#Display all credit cards
+	return(render_template('credits.html', t=title, h=heading))
 
 if __name__ == "__main__":
     app.run(debug=True)

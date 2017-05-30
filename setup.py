@@ -4,6 +4,7 @@ import pandas as pd
 import sys, getopt, pprint
 from pymongo import MongoClient
 import os.path
+import re
 
 MONGODB_HOST = 'localhost'
 MONGODB_PORT = 27017
@@ -19,11 +20,12 @@ if(collection.find().count() > 0):
 csvfile = open(os.path.join(os.path.dirname(__file__),"data/CurrentValues.csv"))
 reader = csv.DictReader( csvfile )
 
-header= ["CardName", "Program", "Issuer",	 "Link",	"IntroOffer",	"Cash",	"Points",	"Nights",	"Credit",	"FeeWaived1stYr", "Fee", "Spend",	"img",	"Rate",	"MaxValue",	"isMax",	"newMax",	"Value"]
+header= ["CardName", "Program", "Issuer",	 "Link",	"IntroOffer",	"Cash",	"Points",	"Nights",	"Credit",	"FeeWaived1stYr", "Fee", "Spend",	"img",	"Rate",	 "Value"]
 for each in reader:
     row={}
     for field in header:
-        if field=='Value':
+        if field in ['Value', 'Cash', 'Points', 'Nights']:
+            each[field] = re.sub("\.00E\+05", "00000", each[field])
             row[field]=int(each[field])
         else:
             row[field]=each[field]
