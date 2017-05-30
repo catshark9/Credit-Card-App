@@ -31,47 +31,52 @@
 						<li class="dropdown">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Nav<span class="caret"></span></a>
 							<ul class="dropdown-menu">
-								<li><a href="/list">All Cash Flows</a></li>
-								<li><a href="/cf_in">Cash Flows Coming In</a></li>
-								<li><a href="/cf_out">Cash flows Going Out</a></li>
+								<li><a href="/list">All Cards</a></li>
+								<li><a href="/view">Edit Cards</a></li>
 							</ul>
 						</li>
 					</ul>
 				</div>
-			/<div>
+			</div>
 		</nav>
 
 		
-		<h3>Update Cash Flow</h3>
-		<form action="/action3" method="POST">
-		{% for cf in cfs %}
-			Unique Object ID : {{ cf['_id'] }}<br/>
-		<input type="text" name="_id" value="{{ cf['_id'] }}" hidden>
+		<h3>Update Card Information</h3>
+		<form action="/modify_action" method="POST">
+		{% for card in cards %}
+			Unique Object ID : {{ card['_id'] }}<br/>
+		<input type="text" name="_id" value="{{ card['_id'] }}" hidden>
 
 		<table class="table">
 			<tbody class="thead-inverse">
 				<tr>
-					<td>Source Name</td><td> : </td><td><input type="text" name="name" value="{{ cf['name'] }}" placeholder="{{ cf['name'] }}"></td>
+					<td>Name</td><td> : </td><td><input type="text" name="name" value="{{ card['CardName'] }}" placeholder="{{ card['CardName'] }}"></td>
 				</tr>
 				<tr>
-					<td>Amount</td><td> : </td><td><input type="text" name="amount" value="{{ cf['amount'] }}" placeholder="{{ cf['amount'] }}"></td>
+					<td>Cash</td><td> : </td><td><input type="text" name="cash" value="{{ card['Cash'] }}" placeholder="{{ card['Cash'] }}"></td>
 				</tr>
 				<tr>
-					<td>Month</td><td> : </td><td><input type="text" name="month" value="{{ cf['month'] }}" placeholder="{{ cf['month'] }}"></td>
+					<td>Points</td><td> : </td><td><input type="text" name="points" value="{{ card['Points'] }}" placeholder="{{ card['Points'] }}"></td>
 				</tr>
 				<tr>
-					<td>Year</td><td> : </td><td><input type="text" name="year" value="{{ cf['year'] }}" placeholder="{{ cf['year'] }}"></td>
+					<td>Nights</td><td> : </td><td><input type="text" name="nights" value="{{ card['Nights'] }}" placeholder="{{ card['Nights'] }}"></td>
 				</tr>
 			s	<tr>
-					<td>In/Out</td><td> : </td><td><input type="text" name="io" value="{{ cf['io'] }}" placeholder="{{ cf['io'] }}"></td>
+					<td>Spend</td><td> : </td><td><input type="text" name="spend" value="{{ card['Spend'] }}" placeholder="{{ card['Spend'] }}"></td>
+				</tr>
+								<tr>
+					<td>Fee</td><td> : </td><td><input type="text" name="fee" value="{{ card['Fee'] }}" placeholder="{{ card['Fee'] }}"></td>
+				</tr>
+								<tr>
+					<td>Value</td><td> : </td><td><input type="text" name="value" value="{{ card['Value'] }}" placeholder="{{ card['Value'] }}"></td>
 				</tr>
 			</tbody>
 		</table>
 		{% endfor %}
-			<button type="submit" class="btn btn-default">Update Cash Flow</button>
+			<button type="submit" class="btn btn-default">Update Card Details</button>
 			<br/>
 		</form>
-		<a href="/">Return to Budget</a>
+		<a href="/">Return to Card List</a>
 
 		<script src="{{ url_for('static',filename='js/jquery.min.js')}}"></script>
 		<script src="{{ url_for('static',filename='js/bootstrap.min.js')}}"></script>
