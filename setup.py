@@ -30,3 +30,20 @@ for each in reader:
         else:
             row[field]=each[field]
     collection.insert_one(row)
+
+
+COLLECTION_NAME = 'Rates'
+collection = connection[DBS_NAME][COLLECTION_NAME]
+
+if(collection.find().count() > 0):
+    collection.drop()
+
+csvfile = open(os.path.join(os.path.dirname(__file__),"scraper/data/rates.csv"))
+reader = csv.DictReader( csvfile )
+
+header= ["Program", "This_Month", "Last_Month", "Notes"]
+for each in reader:
+    row={}
+    for field in header:
+        row[field]=each[field]
+    collection.insert_one(row)

@@ -28,8 +28,9 @@ rates <- url %>%
   html_nodes('table') %>%
   html_table(header=TRUE)
 rates<-rates[[1]]
-names(rates)[1] <- 'Call'
-rates[c(2,3)] <-NULL
+rates <- rates[-4]
+names(rates) <- c('Program', 'This_Month', 'Last_Month', 'Notes')
+
 
 rates[,2] <- str_trim(rates[,2])
 rates[,2] <- as.numeric(ifelse(grepl('-', rates[,2]),

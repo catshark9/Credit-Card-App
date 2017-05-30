@@ -41,6 +41,11 @@ def view():
 	CurrentValue = collection.find().sort('Value', pymongo.DESCENDING)
 	return(render_template('view.html',cards=CurrentValue, t=title, h=heading))
 
+@app.route("/rates")
+def rates():
+	rates = connection[DBS_NAME]['Rates'].find()
+	return(render_template('rates.html',rates=rates, t=title, h=heading))
+
 @app.route('/card/<name>', methods=['GET'])
 def cardname(name):
     CurrentValue = collection.find({"CardName":name}).sort('Value', pymongo.DESCENDING)
@@ -48,7 +53,6 @@ def cardname(name):
 
 @app.route("/delete")
 def delete():
-	#to edit informaion for cards
 	key=request.values.get("_id")
 	collection.remove({"_id":ObjectId(key)})
 	return(redirect("/view"))
@@ -109,7 +113,7 @@ def modify_action():
 
 @app.route("/about")
 def about():
-	#Display all credit cards
+	#credz
 	return(render_template('credits.html', t=title, h=heading))
 
 if __name__ == "__main__":

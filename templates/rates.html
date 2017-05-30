@@ -37,76 +37,29 @@
         </div>
     </nav>
 
-    {% if cards[0] %}
     <div class="container">
         <table class="table" id="myTable">
             <thead class="thead-inverse">
                 <tr>
-                    <th>Name</th>
-                    <th>Cash</th>
-                    <th>Points</th>
-                    <th>Nights</th>
-                    <th>Spend</th>
-                    <th>Fee</th>
-                    <th>Value</th>
-                    <th>Action</th>
+                    <th>Program</th>
+                    <th>This Month</th>
+                    <th>Last Month</th>
+                    <th>Notes</th>
                 </tr>
             </thead>
             <tbody>
-            {% for card in cards %}
+            {% for rate in rates %}
                 <tr>
-                    <td>{{ card["CardName"] }}</td>
-                    <td>{{ card["Cash"] }}</td>
-                    <td>{{ card["Points"] }}</td>
-                    <td>{{ card["Nights"] }}</td>
-                    <td>{{ card["Spend"] }}</td>
-                    <td>{{ card["Fee"] }}</td>
-                    <td>{{ card["Value"] }}</td>
-                    <td><a href="./delete?_id={{ card['_id'] }}"><button type="submit" class="btn btn-default">Delete</button></a> 
-                        <a href="./update?_id={{ card['_id'] }}"><button type="submit" class="btn btn-default">Edit</button></a></td>
+                    <td>{{ rate["Program"] }}</td>
+                    <td>{{ rate["This_Month"] }}</td>
+                    <td>{{ rate["Last_Month"] }}</td>
+                    <td>{{ rate["Notes"] }}</td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>   
     </div>
-    {% else %}
-		<div class="container">
-        <div class="row">
-            <div class="col-md-2">
-                <p>Nothing to see here</p>
-            </div>
-        </div>
-        </div>
-    {% endif %}
     </hr>
-
-    <h3>Add a Cash Flow</h3>
-    <form action="/add" method="POST">
-        <table class="table">
-            <thead class="thead-inverse">
-                <tr>
-                    <th scope="row"></th>
-                    <th>Source Name</th>
-                    <th>Amount</th>
-                    <th>Month</th>
-                    <th>Year</th>
-                    <th>In/Out</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td></td>
-                    <td><input type="text" name="name" placeholder="Cash Flow" /></td>
-                    <td><input type="text" name="amount" placeholder="Amount" /></td>
-                    <td><input type="text" name="month" placeholder="month (01)" /></td>
-                    <td><input type="text" name="year" placeholder="year (2017)" /></td>
-                    <td><input type="text" name="io" placeholder="in/out" /></td>
-                    <td><button type="submit" class="btn btn-default"> Create </button></td>
-                </tr>
-            </tbody>
-	</form>
-	</table>
    
    
 	
