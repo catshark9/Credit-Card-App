@@ -17,7 +17,7 @@ collection = connection[DBS_NAME][COLLECTION_NAME]
 if(collection.find().count() > 0):
     collection.drop()
 
-csvfile = open(os.path.join(os.path.dirname(__file__),"data/CurrentValues.csv"))
+csvfile = open(os.path.join(os.path.dirname(__file__),"scraper/data/CurrentValues.csv"))
 reader = csv.DictReader( csvfile )
 
 header= ["CardName", "Program", "Issuer",	 "Link",	"IntroOffer",	"Cash",	"Points",	"Nights",	"Credit",	"FeeWaived1stYr", "Fee", "Spend",	"img",	"Rate",	 "Value"]

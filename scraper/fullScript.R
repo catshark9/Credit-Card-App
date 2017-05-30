@@ -4,7 +4,6 @@ setwd('C:/Users/Jon Kelley/Documents/Apps/CreditCard-App/scraper')
 
 suppressMessages(library(rvest))
 suppressMessages(library(stringr))
-suppressMessages(library(xlsx))
 suppressMessages(library(dplyr))
 suppressMessages(library(readr))
 
