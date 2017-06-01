@@ -57,12 +57,16 @@ abus$Points <- as.numeric(gsub(',','',abus$Points))
 abus$Nights <- ifelse(grepl('nights', abus$IntroOffer), 
                       2, 0)
 
+abusLinks <- abus$Link
 abusCredit <- c()
 abusFee <- c()
 abusIMG <- c()
-i <- 1
+test <- data.frame()
+
+while(nrow(test)<nrow(abus)){
+  i <- 1
 for(l in abusLinks){
-  writeLines(paste0(i))
+  #writeLines(paste0(i))
   writeLines(sprintf("var url ='%s';
                      var page = new WebPage()
                      var fs = require('fs');
@@ -76,7 +80,7 @@ for(l in abusLinks){
                      setTimeout(function() {
                      fs.write('1.html', page.content, 'w');
                      phantom.exit();
-                     }, 10000);
+                     }, 3000);
                      }", l), con="scrape.js")
   
   system("phantomjs scrape.js")
@@ -89,22 +93,38 @@ for(l in abusLinks){
   credit <- credit[grepl('Airline Fee Credit', credit)]
   credit <- ifelse(length(credit)==0, 0, credit)
   credit <- as.numeric(gsub('.*?\\$(\\d{3}) Airline Fee Credit.*', '\\1', credit))
-  abusCredit <- c(abusCredit, credit)
+  #abusCredit <- c(abusCredit, credit)
   
   fee <- url %>%
     html_nodes(xpath='//*[@id="offer-overview"]/div/div[2]') %>%
     html_text()
   
-  abusFee <- c(abusFee, fee)
+  #abusFee <- c(abusFee, fee)
   
   img <- url %>%
     html_nodes(xpath='//*[@id="offer-overview"]/div/div[3]/div/div/img') %>%
     html_attr("src")
-  abusIMG <- c(abusIMG, img)
+  #abusIMG <- c(abusIMG, img)
+  
+  writeLines(paste0(i, ' ', length(img), ' ', length(fee)))
+  
+  if(length(fee)>0 & length(img)>0){
+    add <-  data.frame(Link=l, Credit=credit, Fee=fee, img=img)
+    test <- rbind(test, add)
+  }
   
   
   i <- i + 1
 }
+  abusLinks <- abusLinks[!abusLinks%in%test$Link]
+}
+abus <- merge(x = abus, y = test, by = "Link", all = TRUE)
+abusFee <- abus$Fee
+abusIMG <- abus$img
+abusCredit <- abus$Credit
+
+abus <- abus[1:8]
+
 
 abus$Credit <- abusCredit
 
@@ -125,6 +145,8 @@ abusSpend2 <- as.numeric(ifelse(grepl('spend \\$\\d{3,5}', abusSpend),
 abus$Spend <- apply(data.frame(abusSpend1, abusSpend2), 1, max)
 
 abus$img <- abusIMG
+
+#abus <- abus[!is.na(abus$img), ]
 
 for(p in rates[,1][rates[,1]!='American']){
   abus$Program <- ifelse(grepl(p, abus$CardName), p, abus$Program)
