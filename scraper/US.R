@@ -50,7 +50,7 @@ usIMG <- paste0('https://www.usbank.com/', usIMG)
 
 us <- data.frame(CardName = usCardName,
                   Issuer = 'US',
-                  Program = 'FlexPoints',
+                  Program = 'FlexPerks',
                   Link = usLinks, stringsAsFactors = FALSE)
 
 
@@ -170,10 +170,10 @@ us$img <- usIMG
 us <- us[!duplicated(us$CardName), ]
 
 for(p in rates[,1]){
-  us$Program <- ifelse(grepl(p, us$CardName), p, us$Program)
+  us$Program <- ifelse(grepl(p, us$CardName) & !grepl('US Bank', us$CardName), p, us$Program)
 }
 for(p in rates[,1]){
-  us$Program <- ifelse(grepl(p, us$IntroOffer), p, us$Program)
+  us$Program <- ifelse(grepl(p, us$IntroOffer) & !grepl('US Bank', us$CardName), p, us$Program)
 }
 
 

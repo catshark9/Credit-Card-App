@@ -1,5 +1,8 @@
-cards <- rbind(chase, bc, citi, amex, abus, boa, us)
+cards <- rbind(chase, bc, citi, amex, abus, boa, us, c1)
 cards$Credit <- ifelse(cards$Credit==1, 0, cards$Credit)
+
+cards$Credit <- ifelse(cards$Points>0 & cards$Cash > 0, cards$Cash, cards$Credit)
+cards$Cash <- ifelse(cards$Points>0 & cards$Cash > 0, 0, cards$Cash)
 
 
 cards <- merge(x = cards, y = rates[1:2], by = "Program", all.x = TRUE)

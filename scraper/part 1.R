@@ -1,3 +1,5 @@
+programs <- read_csv("data/programs.csv")
+
 url <- read_html('https://thepointsguy.com/category/points-valuations/')
 url <- url %>%
   html_nodes(xpath='/html/body/div[1]/div[3]/section[2]/div/div[1]/div[2]/a') %>%
@@ -49,5 +51,9 @@ rates[,1] <- gsub('Starpoints', '', rates[,1])
 rates[,1] <- gsub('Korean Air', 'SKYPASS', rates[,1])
 rates[,1] <- str_trim(rates[,1])
 rates <- rates[!is.na(rates[,2]), ]
+
+rates <- merge(x=rates, y=programs, by='Program', all=TRUE)
+rates$This_Month[is.na(rates$This_Month)] <- 1.0
+rates$Notes[is.na(rates$Notes)] <- ''
 
 write.csv(rates, 'data/rates.csv', row.names = FALSE)

@@ -80,7 +80,7 @@ def filter():
 	program=request.values.get("programs")
 	issuer=request.values.get("issuers")
 	if (type == 'All') & (program == 'All') & (issuer == 'All'):
-		CurrentValue = collection.find({ "Value":{"$ne":'NA'}}).sort('Value', pymongo.DESCENDING)
+		CurrentValue = collection.find({"Value":{"$ne":'NA'}}).sort('Value', pymongo.DESCENDING)
 	elif (type == 'All') & (program == 'All') & (issuer != 'All'):
 		CurrentValue = collection.find({"Issuer":issuer, "Value":{"$ne":'NA'}}).sort('Value', pymongo.DESCENDING)
 	elif (type == 'All') & (program != 'All') & (issuer == 'All'):
@@ -95,7 +95,13 @@ def filter():
 		CurrentValue = collection.find({type:{"$gt":0}, "Program":program, "Value":{"$ne":'NA'}}).sort('Value', pymongo.DESCENDING)
 	else:
 		CurrentValue = collection.find({type:{"$gt":0}, "Program":program, "Issuer":issuer, "Value":{"$ne":'NA'}}).sort('Value', pymongo.DESCENDING)
+
+
+
+
 	return(render_template('index.html',cards=CurrentValue,t=title,h=heading, programs=programs, issuers=issuers))
+
+
 
 @app.route("/modify_action", methods=['POST'])
 def modify_action():

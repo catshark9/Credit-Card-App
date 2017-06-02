@@ -30,7 +30,7 @@ chase <- data.frame(CardName = chaseCardName,
 
 # Intro Reward Types
 chase$Cash   <- as.numeric(ifelse(grepl('\\$\\d{2,3} .*?after', chaseCardIntro), 
-                       gsub('.*? (\\$)(\\d{2,3}) .*$', '\\2', chaseCardIntro), 0))
+                       gsub(' (\\$)(\\d{2,3}) .*$', '\\2', chaseCardIntro), 0))
 chase$Points <- as.numeric(ifelse(grepl(' \\d{1,3},\\d{3} ', chaseCardIntro), 
                        gsub('.*? (\\d{1,3}),(\\d{3}).*', '\\1\\2', chaseCardIntro), 0))
 chase$Nights <- ifelse(grepl('nights', chaseCardIntro), 

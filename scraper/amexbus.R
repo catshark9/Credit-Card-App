@@ -40,7 +40,7 @@ abusLinks <- pg %>%
 
 abus <- data.frame(CardName = abusCardName,
                    Issuer = 'Amex',
-                   Program = 'American Express',
+                   Program = 'American Express Membership Rewards',
                    Link = abusLinks,
                    IntroOffer = abusCardOffer, stringsAsFactors = FALSE)
 

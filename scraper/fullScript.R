@@ -17,6 +17,7 @@ source('amex.R')
 source('amexbus.R')
 source('BOA.R')
 source('US.R')
+source('capital1.R')
 source('part 2.R')
 
 

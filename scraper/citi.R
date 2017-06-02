@@ -33,7 +33,7 @@ citiLinks <- paste0('https://www.citi.com', citiLinks)
 
 citi <- data.frame(CardName = citiCardName,
                    Issuer = 'Citi',
-                   Program = 'Citi ThankYou Rewards',
+                   Program = 'Citi ThankYou Points',
                    Link = citiLinks,
                    #IntoOffer = citiCardOffer, 
                    stringsAsFactors = FALSE)

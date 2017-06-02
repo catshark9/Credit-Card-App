@@ -48,7 +48,7 @@ if(length(amexLinks)>length(amexCardName)){
 
 amex <- data.frame(CardName = amexCardName,
                    Issuer = 'Amex',
-                   Program = 'American Express',
+                   Program = 'American Express Membership Rewards',
                    Link = amexLinks,
                    IntroOffer = amexCardOffer, stringsAsFactors = FALSE)
 
